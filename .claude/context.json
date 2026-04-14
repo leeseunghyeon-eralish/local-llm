@@ -15,7 +15,31 @@
     "pattern": "modular"
   },
   "directoryStructure": {
+    "mcp/": {
+      "decode-server.js": "Base64/URL 인코딩/디코딩 MCP 서버"
+    },
     "src/": {}
   },
+  "mcpServers": {
+    "decode-server": {
+      "description": "Base64/URL 인코딩/디코딩 도구 (base64_decode, base64_encode, url_decode, url_encode, full_decode)",
+      "transport": "stdio",
+      "runtime": "node",
+      "entrypoint": "mcp/decode-server.js"
+    },
+    "ollama-server": {
+      "description": "Ollama 로컬 LLM 추론 도구 (ollama_generate, ollama_chat, ollama_models)",
+      "transport": "stdio",
+      "runtime": "node",
+      "entrypoint": "mcp/ollama-server.js",
+      "env": {
+        "OLLAMA_HOST": "http://localhost:11434",
+        "OLLAMA_MODEL": "mixtral:8x22b"
+      }
+    }
+  },
+  "additionalDirectories": [
+    "dev-workspace"
+  ],
   "status": "initializing"
 }

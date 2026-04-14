@@ -10,6 +10,22 @@
 
 **이 파일들은 항상 최신 상태를 유지해야 합니다.**
 
+## Additional Directory
+
+- **dev-workspace**: 공유 인프라/템플릿 참조용 (`c:/Users/erako/Documents/dev/dev-workspace`)
+
+## MCP Servers
+
+| 서버 | 설명 | 도구 |
+|------|------|------|
+| decode-server | Base64/URL 인코딩/디코딩 | `base64_decode`, `base64_encode`, `url_decode`, `url_encode`, `full_decode` |
+| ollama-server | Ollama 로컬 LLM 추론 (mixtral:8x22b) | `ollama_generate`, `ollama_chat`, `ollama_models` |
+
+- 설정: `.mcp.json` (프로젝트 루트, tracked)
+- 활성화: `.claude/settings.local.json`의 `enableAllProjectMcpServers` + `enabledMcpjsonServers`
+- 런타임: Node.js (`mcp/decode-server.js`)
+- 새 MCP 서버 추가 시: `.mcp.json`에 서버 등록 + `settings.local.json`의 `enabledMcpjsonServers`에 추가
+
 ## Tech Stack
 
 - **Language**: Python 3.11+

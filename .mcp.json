@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "decode-server": {
+      "command": "node",
+      "args": [
+        "C:/Users/erako/Documents/dev/local-llm/mcp/decode-server.js"
+      ]
+    },
+    "ollama-server": {
+      "command": "node",
+      "args": [
+        "C:/Users/erako/Documents/dev/local-llm/mcp/ollama-server.js"
+      ],
+      "env": {
+        "OLLAMA_HOST": "http://localhost:11434",
+        "OLLAMA_MODEL": "mixtral:8x22b"
+      }
+    }
+  }
+}
