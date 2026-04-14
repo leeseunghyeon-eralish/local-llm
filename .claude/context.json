@@ -1,0 +1,21 @@
+{
+  "project": "local-llm",
+  "version": "0.1.0",
+  "type": "be",
+  "stack": {
+    "language": "Python",
+    "framework": "FastAPI (or vLLM/Ollama)",
+    "inference": "vLLM / llama.cpp / Ollama",
+    "port": 8000
+  },
+  "conventions": {
+    "files": "snake_case",
+    "modules": "snake_case",
+    "classes": "PascalCase",
+    "pattern": "modular"
+  },
+  "directoryStructure": {
+    "src/": {}
+  },
+  "status": "initializing"
+}

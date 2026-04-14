@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "lastUpdated": "2026-04-14",
+  "phases": {
+    "phase-1": {
+      "status": "in-progress",
+      "description": "프로젝트 초기 셋업 및 기본 LLM 서빙 구조 구축",
+      "tasks": {}
+    }
+  }
+}
