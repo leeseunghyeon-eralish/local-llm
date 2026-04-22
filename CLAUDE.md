@@ -199,6 +199,52 @@ You are operating within a constrained context window and strict system prompts.
     - Re-exports and barrel file entries
     - Test files and mocks
 
+### Parallel Agent Execution (Git Worktree)
+
+11. **PHASE BRANCH = ORCHESTRATOR HOME**: 모든 `plan.json` phase는 `feature/phase-{N}-{desc}` 브랜치를 생성. 메인 에이전트는 항상 이 phase 브랜치에서 작업. 릴리즈(사용자 트리거)시 phase 브랜치를 `--no-ff` + `vX.Y.Z` 태그로 main에 머지. Phase 작업을 main에 직접 커밋 금지.
+
+12. **병렬 서브에이전트 소환 시점**: 단일 phase에서 독립적인 하위 작업(파일 세트가 겹치지 않음)이 여러 개일 때, Agent 도구를 `isolation: "worktree"` 로 병렬 spawn. 각 서브에이전트는 임시 git worktree를 할당받아 working tree 충돌 없이 동시 편집. **필수 조건**: 총 파일 수 >5 AND 작업이 서로 독립적. 서브에이전트 호출은 **한 메시지에 여러 Agent 툴 콜**로 묶어야 진짜 병렬 실행.
+
+    ```
+    Agent({
+      subagent_type: "general-purpose",
+      isolation: "worktree",
+      description: "...",
+      prompt: "..."
+    })
+    ```
+
+13. **독립성 게이트**: 병렬 spawn 전 서브태스크가 **서로 다른 파일 집합**을 건드리는지 확인. 두 서브태스크가 같은 파일을 수정하면(예: 둘 다 `docker-compose.yml` 편집) phase 브랜치에서 **순차 실행**. 공유 config 변경, 마이그레이션 순서, 상호 의존 작업은 병렬화 금지.
+
+14. **메인 에이전트의 통합 책임**: 서브에이전트들이 반환된 후, phase 브랜치의 메인 에이전트는:
+    - 각 worktree에서 생성된 diff/브랜치를 검토
+    - 서브 브랜치를 phase 브랜치에 머지 (또는 커밋을 cherry-pick)
+    - 통합된 결과에 대해 full 검증 실행 (type-check + lint + build)
+    - 그 후에만 작업 완료 보고
+
+15. **Worktree 생명주기**:
+    - 변경사항 없음 → 도구가 자동 정리, 별도 조치 불필요
+    - 변경사항 있음 → 도구가 path + branch 반환; 메인 에이전트가 머지 + worktree 제거 책임 (`git worktree remove`)
+    - 오래된 worktree 또는 고아 서브브랜치 방치 금지
+
+### Phase 라이프사이클 다이어그램
+
+```
+main (릴리즈 전용, hook 보호)
+  │
+  └─ feature/phase-{N}-{desc}         ← 메인 에이전트의 home, long-lived
+        │
+        ├─ worktree: subtask-1-branch  ← 병렬 서브에이전트 A
+        ├─ worktree: subtask-2-branch  ← 병렬 서브에이전트 B
+        └─ worktree: subtask-3-branch  ← 병렬 서브에이전트 C
+                │
+                ▼ (모든 서브에이전트 완료)
+        메인 에이전트가 서브 브랜치들을 phase 브랜치에 머지
+                │
+                ▼ (검증 통과, 사용자 릴리즈 지시)
+        main  --no-ff merge + tag vX.Y.Z
+```
+
 ### Context File Maintenance
 
 | 이벤트 | 업데이트 대상 |
